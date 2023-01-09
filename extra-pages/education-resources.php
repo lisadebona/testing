@@ -27,26 +27,46 @@ if( isset($_GET['file']) && $_GET['file'] ) {
     $pageFile = $e->file;
     if($pageFile==$current) {
       $single_page_title = $e->title;
-      $single_content = getBodyContent('./content/' . $pageFile);
-      $content = @file_get_contents('./content/' . $pageFile);
-      $styles = explode('<style type="text/css">',$content);
+      $content = getBodyContent('./content/' . $pageFile);
+      $fullContent = @file_get_contents('./content/' . $pageFile);
+
+      //CLEAN UP CSS
+      $styles = explode('<style type="text/css">',$fullContent);
       if($styles) {
-        $customStyles = str_replace('</style>','',$styles[1]);
+        if( isset($styles[1]) && $styles[1] ) {
+          $strs = str_replace('</style>','',$styles[1]);
+          if( $strs = explode(';',$styles[1]) ) {
+            $cssData = '';
+            $dataStrs = explode('</style>',$styles[1]);
+            if( isset($dataStrs[0]) && $dataStrs[0] ) {
+              $htmldata = $dataStrs[0];
+              $customStyles = preg_replace('/\s*@import.*;\s*/iU', '', $htmldata);
+            }
+          }
+        }
       }
+
+      $page_content = explode('<body.*',$content);
+      $page_html_data = ( isset($page_content[0]) && $page_content[0] ) ? str_replace('https://www.google.com/url?q=','',$page_content[0]) : '';
+      $single_content = $page_html_data;
     }
   }
 }
+
+
+
+
 
 ?>
 <html>
   <head>
     <title><?php echo xlt($PARENT_TITLE); ?></title>
     <?php Header::setupHeader(['datetime-picker', 'jquery-ui', 'jquery-ui-redmond', 'opener', 'moment']); ?>
-    
     <?php if ($single_content && $customStyles) { ?>
     <style type="text/css"><?php echo $customStyles ?></style> 
     <?php } ?>
     <link rel="stylesheet" href="./css/styles.css">
+    <script src="./js/scripts.js"></script>
   </head>
   <body>
 
@@ -108,7 +128,7 @@ if( isset($_GET['file']) && $_GET['file'] ) {
     </main>
 
 
-    <script src="./js/scripts.js"></script>
+    
   </body>
 </html>
 

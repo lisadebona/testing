@@ -18,4 +18,14 @@ jQuery(document).ready(function($){
   }
 
 
+  $(".entry a").each(function(e){
+
+    var pagelink = $(this).attr('href');
+    if( pagelink.indexOf('http') !== -1 || pagelink.indexOf('https') !== -1 ) {
+      $(this).attr('target','_BLANK');
+    }
+
+  });
+
+
 });
