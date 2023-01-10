@@ -76,22 +76,26 @@ if( isset($_GET['file']) && $_GET['file'] ) {
         <?php if ( $is_home_page ) { ?>
 
           <div class="home">
-            <h1 class="page-title"><?php echo $PARENT_TITLE ?></h1>
+            <div class="titlediv">
+              <h1 class="page-title"><?php echo $PARENT_TITLE ?></h1>
+              <?php if( acl_check('admin', 'super', $_SESSION['authUser']) ) { ?>
+                <a href="javascript:void(0)" class="settings-button" aria-label="Settings"><i class="fa fa-cog" aria-hidden="true"></i></a>
+              <?php } ?>
+            </div>
+            
             <div id="mainpage">
-              <?php  
-              
-              
-              if($links) { ?>
+              <?php if($links) { ?>
                 <ul id="educationLinks" class="links three-columns">
                   <?php foreach ($links as $e) {
                     $pagetitle = $e->title; 
                     $pagelink = ($e->url) ? $e->url : 'javascript:void(0)';
                     $file = $e->file;
+                    $target = ($e->url) ? 'target="_blank"':'';
+                    $link_class = ($e->url) ? 'external-link':'internal-link';
                     if($file) {
                       $pagelink = '?file=' . $file;
-                    }
-                    ?>
-                    <li><a href="<?php echo $pagelink ?>"><?php echo $pagetitle ?></a></li> 
+                    } ?>
+                    <li data-file="<?php echo $e->title ?>" data-url="<?php echo $e->url ?>"><a href="<?php echo $pagelink ?>"<?php echo $target ?> class="<?php echo $link_class ?>"><?php echo $pagetitle ?></a></li> 
                   <?php } ?>
                 </ul>
               <?php } ?>
